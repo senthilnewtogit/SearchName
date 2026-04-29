@@ -1,0 +1,13 @@
+<resources>
+    <string name="no_result_found">No result found</string>
+    <string name="unknown_error">Unknow error</string>
+    <string name="retry">Retry</string>
+    <string name="search_character">Search characters…</string>
+    <string name="character_name">Character Name</string>
+    <string name="character_details_unknown">Unknown</string>
+    <string name="character_details_species">Species: %1$s</string>
+    <string name="character_details_status">Status: %1$s</string>
+    <string name="character_details_origin">Origin: %1$s</string>
+    <string name="character_details_type">Type: %1$s</string>
+    <string name="character_details_created">Created: %1$s</string>
+</resources>
