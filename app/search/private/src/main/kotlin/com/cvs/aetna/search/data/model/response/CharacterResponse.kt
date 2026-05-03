@@ -1,11 +1,10 @@
-package com.cvs.aetna.search.data.model
+package com.cvs.aetna.search.data.model.response
 
 import com.cvs.aetna.search.domain.model.CharacterDetails
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CharacterResponse(
-    val error: String? = null,
     val info: PaginationInfo? = null,
     val results: List<Character>? = null,
 )

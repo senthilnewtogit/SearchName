@@ -51,8 +51,5 @@ dependencies {
     testImplementation(libs.turbine)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
-    //testImplementation(libs.kotlinx.coroutines.android)
-    //testImplementation(libs.kotlinx.coroutines.core)
-
-
+    testImplementation(libs.mockito.kotlin)
 }

@@ -13,24 +13,24 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.cvs.aetna.search.presentation.ui.model.UiText
 import com.cvs.aetna.search.pub.R
 
 @Composable
 fun ErrorUIElement(
-    error: String?,
-    onRetry: () -> Unit,
     modifier: Modifier = Modifier,
+    error: String? = null,
+    uiText: UiText? = null,
+    onRetry: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -39,8 +39,13 @@ fun ErrorUIElement(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(
-            text = error ?: stringResource(R.string.unknown_error),
+        TextAuto(
+            text = if (uiText is UiText.StringResource) {
+                stringResource(id = uiText.resId)
+            } else {
+                error
+                    ?: stringResource(R.string.unknown_error)
+            },
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error,
         )
@@ -50,17 +55,22 @@ fun ErrorUIElement(
         Button(
             onClick = onRetry,
             shape = MaterialTheme.shapes.medium,
-            modifier = Modifier.testTag("retry_button").semantics(mergeDescendants = true) {},
+            modifier = Modifier
+                .testTag("retry_button")
+                .semantics(mergeDescendants = true) {},
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(32.dp).padding(end = 8.dp).semantics {
-                    hideFromAccessibility()
-                },
+                modifier = Modifier
+                    .size(32.dp)
+                    .padding(end = 8.dp)
+                    .semantics {
+                        hideFromAccessibility()
+                    },
             )
-            Text(text = stringResource(R.string.retry))
+            TextAuto(text = stringResource(R.string.retry))
         }
     }
 }

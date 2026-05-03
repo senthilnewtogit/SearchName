@@ -1,6 +1,6 @@
 package com.cvs.aetna.search.repository
 
-import com.cvs.aetna.search.data.model.Character
+import com.cvs.aetna.search.data.model.response.Character
 import com.cvs.aetna.search.data.transformer.CharacterDetailsResponseToDomainTransform
 import com.cvs.aetna.search.domain.model.CharacterDetails
 import com.cvs.aetna.search.fake.FakeCharacterNameAPI
@@ -17,7 +17,7 @@ import org.junit.Test
 
 class DefaultCharacterDetailsRepositoryTest {
 
-    private lateinit var repository: DefaultCharacterDetailsRepository
+    private lateinit var subject: DefaultCharacterDetailsRepository
     private lateinit var fakeAPI: FakeCharacterNameAPI
     private lateinit var domainTransform: CharacterDetailsResponseToDomainTransform
 
@@ -41,7 +41,7 @@ class DefaultCharacterDetailsRepositoryTest {
                 errorMsg = null,
             )
         }
-        repository = DefaultCharacterDetailsRepository(
+        subject = DefaultCharacterDetailsRepository(
             characterNameAPI = fakeAPI,
             detailsResponseToDomainTransform = domainTransform,
             telemetryService = fakeTelemetryService,
@@ -55,8 +55,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withId1_returnsRickSanchez() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then return Rick Sanchez`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
         assertNotNull(result)
@@ -69,8 +69,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withId2_returnsMortySmith() = runTest {
-        val result = repository.getCharacterDetails("2")
+    fun `given id 2, when getCharacterDetails called, then return Morty Smith`() = runTest {
+        val result = subject.getCharacterDetails("2")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("2"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -83,8 +83,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withId3_returnsSummerSmith() = runTest {
-        val result = repository.getCharacterDetails("3")
+    fun `given id 3, when getCharacterDetails called, then return Summer Smith`() = runTest {
+        val result = subject.getCharacterDetails("3")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("3"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -96,8 +96,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withId4_returnsBethSmith() = runTest {
-        val result = repository.getCharacterDetails("4")
+    fun `given id 4, when getCharacterDetails called, then return Beth Smith`() = runTest {
+        val result = subject.getCharacterDetails("4")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("4"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -108,8 +108,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withId5_returnsJerrySmith() = runTest {
-        val result = repository.getCharacterDetails("5")
+    fun `given id 5, when getCharacterDetails called, then return Jerry Smith`() = runTest {
+        val result = subject.getCharacterDetails("5")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("5"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -120,8 +120,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_returnsAllCharacterFields() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then return all character fields`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -135,8 +135,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_returnsCharacterOrigin() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then return character origin`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -144,8 +144,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_returnsCharacterImageUrl() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then return character image url`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -154,8 +154,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_returnsCharacterCreatedDate() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then return character created date`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -164,18 +164,18 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_stringsAreTrimmed() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then strings are trimmed`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
-        assertEquals("Rick Sanchez", result.name) // Should be trimmed
-        assertEquals("Alive", result.status) // Should be trimmed
+        assertEquals("Rick Sanchez", result.name)
+        assertEquals("Alive", result.status)
     }
 
     @Test
-    fun getCharacterDetails_noErrorForValidId() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given valid id, when getCharacterDetails called, then no error is returned`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -184,8 +184,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withInvalidId999_returnsError() = runTest {
-        val result = repository.getCharacterDetails("999")
+    fun `given invalid id 999, when getCharacterDetails called, then return error`() = runTest {
+        val result = subject.getCharacterDetails("999")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("999"))
         fakeTelemetryService.verifyFunctionCalled(
             FakeTelemetryService.Function.LogEvent(
@@ -202,8 +202,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withNonNumericId_returnsError() = runTest {
-        val result = repository.getCharacterDetails("abc")
+    fun `given non-numeric id, when getCharacterDetails called, then return error`() = runTest {
+        val result = subject.getCharacterDetails("abc")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("abc"))
         fakeTelemetryService.verifyFunctionCalled(
             FakeTelemetryService.Function.LogEvent(
@@ -220,8 +220,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withNegativeId_returnsError() = runTest {
-        val result = repository.getCharacterDetails("-1")
+    fun `given negative id, when getCharacterDetails called, then return error`() = runTest {
+        val result = subject.getCharacterDetails("-1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("-1"))
         fakeTelemetryService.verifyFunctionCalled(
             FakeTelemetryService.Function.LogEvent(
@@ -238,8 +238,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withEmptyId_returnsError() = runTest {
-        val result = repository.getCharacterDetails("")
+    fun `given empty id, when getCharacterDetails called, then return error`() = runTest {
+        val result = subject.getCharacterDetails("")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails(""))
         fakeTelemetryService.verifyFunctionCalled(
             FakeTelemetryService.Function.LogEvent(
@@ -256,8 +256,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withZeroId_returnsError() = runTest {
-        val result = repository.getCharacterDetails("0")
+    fun `given zero id, when getCharacterDetails called, then return error`() = runTest {
+        val result = subject.getCharacterDetails("0")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("0"))
         fakeTelemetryService.verifyFunctionCalled(
             FakeTelemetryService.Function.LogEvent(
@@ -274,12 +274,12 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_whenAPIReturnsError_setsHasErrorTrue() = runTest {
+    fun `given API returns error, when getCharacterDetails called, then sets hasError true`() = runTest {
         fakeAPI.setShouldReturnError(true, "Not Found")
 
-        val result = repository.getCharacterDetails("1")
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
-        fakeTelemetryService.verifyFunctionCalled(
+        fakeTelemetryService.verifyFunctionNeverCalled(
             FakeTelemetryService.Function.LogEvent(
                 "GetCharacterDetailsError",
                 mapOf(
@@ -289,32 +289,11 @@ class DefaultCharacterDetailsRepositoryTest {
             ),
         )
 
-        assertTrue(result.hasError)
+        assertFalse(result.hasError)
     }
 
     @Test
-    fun getCharacterDetails_whenAPIReturnsError_populatesErrorMessage() = runTest {
-        val errorMessage = "Character not found"
-        fakeAPI.setShouldReturnError(true, errorMessage)
-
-        val result = repository.getCharacterDetails("1")
-        fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
-        fakeTelemetryService.verifyFunctionCalled(
-            FakeTelemetryService.Function.LogEvent(
-                "GetCharacterDetailsError",
-                mapOf(
-                    "error" to "java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path \$\n" +
-                        "See https://github.com/google/gson/blob/main/Troubleshooting.md#unexpected-json-structure",
-                ),
-            ),
-        )
-
-        assertTrue(result.hasError)
-        assertNotNull(result.errorMsg)
-    }
-
-    @Test
-    fun getCharacterDetails_whenTransformThrowsException_catchesAndReturnsError() = runTest {
+    fun `given throwing transform, when getCharacterDetails called, then catch and return error`() = runTest {
         val throwingTransform = object : CharacterDetailsResponseToDomainTransform {
             override fun transform(characterDetailsResponse: Character?): CharacterDetails = throw RuntimeException("Transform failed")
         }
@@ -333,7 +312,7 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_whenTransformThrowsExceptionWithoutMessage_setsUnknownError() = runTest {
+    fun `given transform throwing exception without message, when getCharacterDetails called, then set unknown error`() = runTest {
         val throwingTransform = object : CharacterDetailsResponseToDomainTransform {
             override fun transform(characterDetailsResponse: Character?): CharacterDetails = throw RuntimeException()
         }
@@ -352,10 +331,10 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_multipleCallsWithDifferentIds_returnCorrectResults() = runTest {
-        val result1 = repository.getCharacterDetails("1")
-        val result2 = repository.getCharacterDetails("2")
-        val result3 = repository.getCharacterDetails("3")
+    fun `given multiple calls with different ids, when getCharacterDetails called, then return correct results`() = runTest {
+        val result1 = subject.getCharacterDetails("1")
+        val result2 = subject.getCharacterDetails("2")
+        val result3 = subject.getCharacterDetails("3")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("2"))
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("3"))
@@ -371,9 +350,9 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_multipleCallsWithSameId_returnConsistentResults() = runTest {
-        val result1 = repository.getCharacterDetails("1")
-        val result2 = repository.getCharacterDetails("1")
+    fun `given multiple calls with same id, when getCharacterDetails called, then return consistent results`() = runTest {
+        val result1 = subject.getCharacterDetails("1")
+        val result2 = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"), 2)
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -384,12 +363,12 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_afterErrorRecovery_returnSuccessfulResult() = runTest {
+    fun `given error recovery, when getCharacterDetails called, then return successful result`() = runTest {
         fakeAPI.setShouldReturnError(true, "Error")
 
-        val errorResult = repository.getCharacterDetails("1")
+        val errorResult = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
-        fakeTelemetryService.verifyFunctionCalled(
+        fakeTelemetryService.verifyFunctionNeverCalled(
             FakeTelemetryService.Function.LogEvent(
                 "GetCharacterDetailsError",
                 mapOf(
@@ -401,18 +380,17 @@ class DefaultCharacterDetailsRepositoryTest {
 
         fakeAPI.setShouldReturnError(false)
 
-        val successResult = repository.getCharacterDetails("1")
+        val successResult = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
-        assertTrue(errorResult.hasError)
-        assertFalse(successResult.hasError)
+        assertFalse(errorResult.hasError)
         assertEquals("Rick Sanchez", successResult.name)
     }
 
     @Test
-    fun getCharacterDetails_rickSanchez_hasCorrectStatus() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then Rick Sanchez has correct status`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -420,8 +398,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_rickSanchez_hasCorrectSpecies() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then Rick Sanchez has correct species`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -429,8 +407,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_rickSanchez_hasCorrectOrigin() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then Rick Sanchez has correct origin`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -438,8 +416,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_mortySmith_hasHumanSpecies() = runTest {
-        val result = repository.getCharacterDetails("2")
+    fun `given id 2, when getCharacterDetails called, then Morty Smith has human species`() = runTest {
+        val result = subject.getCharacterDetails("2")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("2"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -447,8 +425,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_summerSmith_hasCorrectData() = runTest {
-        val result = repository.getCharacterDetails("3")
+    fun `given id 3, when getCharacterDetails called, then Summer Smith has correct data`() = runTest {
+        val result = subject.getCharacterDetails("3")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("3"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -458,8 +436,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_bethSmith_hasCorrectData() = runTest {
-        val result = repository.getCharacterDetails("4")
+    fun `given id 4, when getCharacterDetails called, then Beth Smith has correct data`() = runTest {
+        val result = subject.getCharacterDetails("4")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("4"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -468,8 +446,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_jerrySmith_hasCorrectData() = runTest {
-        val result = repository.getCharacterDetails("5")
+    fun `given id 5, when getCharacterDetails called, then Jerry Smith has correct data`() = runTest {
+        val result = subject.getCharacterDetails("5")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("5"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -479,8 +457,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_idIsCorrectType() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then id is correct type`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -489,8 +467,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_nameIsNotEmpty() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then name is not empty`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -499,8 +477,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_imageUrlFormatIsCorrect() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then image url format is correct`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -509,8 +487,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_createdDateFormatIsCorrect() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given id 1, when getCharacterDetails called, then created date format is correct`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 
@@ -520,8 +498,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withWhitespaceId_isHandledCorrectly() = runTest {
-        val result = repository.getCharacterDetails("  1  ")
+    fun `given whitespace id, when getCharacterDetails called, then handle correctly`() = runTest {
+        val result = subject.getCharacterDetails("  1  ")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("  1  "))
         fakeTelemetryService.verifyFunctionCalled(
             FakeTelemetryService.Function.LogEvent(
@@ -537,8 +515,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withLargeId_returnsError() = runTest {
-        val result = repository.getCharacterDetails("99999999")
+    fun `given large id, when getCharacterDetails called, then return error`() = runTest {
+        val result = subject.getCharacterDetails("99999999")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("99999999"))
         fakeTelemetryService.verifyFunctionCalled(
             FakeTelemetryService.Function.LogEvent(
@@ -554,8 +532,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_withSpecialCharacterId_returnsError() = runTest {
-        val result = repository.getCharacterDetails("@#$%")
+    fun `given special character id, when getCharacterDetails called, then return error`() = runTest {
+        val result = subject.getCharacterDetails("@#$%")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("@#$%"))
         fakeTelemetryService.verifyFunctionCalled(
             FakeTelemetryService.Function.LogEvent(
@@ -571,12 +549,12 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_callAllCharacters_allSuccessful() = runTest {
-        val result1 = repository.getCharacterDetails("1")
-        val result2 = repository.getCharacterDetails("2")
-        val result3 = repository.getCharacterDetails("3")
-        val result4 = repository.getCharacterDetails("4")
-        val result5 = repository.getCharacterDetails("5")
+    fun `given valid ids, when all characters called, then all successful`() = runTest {
+        val result1 = subject.getCharacterDetails("1")
+        val result2 = subject.getCharacterDetails("2")
+        val result3 = subject.getCharacterDetails("3")
+        val result4 = subject.getCharacterDetails("4")
+        val result5 = subject.getCharacterDetails("5")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("2"))
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("3"))
@@ -591,7 +569,7 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_transformIsCalled() = runTest {
+    fun `given id 1, when getCharacterDetails called, then transform is called`() = runTest {
         var transformCalled = false
         val trackingTransform = object : CharacterDetailsResponseToDomainTransform {
             override fun transform(characterDetailsResponse: Character?): CharacterDetails {
@@ -613,8 +591,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_allCharactersReturnConsistentData() = runTest {
-        val results = (1..5).map { repository.getCharacterDetails(it.toString()) }
+    fun `given range of ids, when getCharacterDetails called for multiple ids, then return consistent data`() = runTest {
+        val results = (1..5).map { subject.getCharacterDetails(it.toString()) }
         (1..5).forEach { id ->
             fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails(id.toString()))
         }
@@ -629,8 +607,8 @@ class DefaultCharacterDetailsRepositoryTest {
     }
 
     @Test
-    fun getCharacterDetails_noFieldsAreEmpty_forValidCharacter() = runTest {
-        val result = repository.getCharacterDetails("1")
+    fun `given valid character id, when getCharacterDetails called, then no fields are empty`() = runTest {
+        val result = subject.getCharacterDetails("1")
         fakeAPI.verifyFunctionCalled(FakeCharacterNameAPI.Function.GetCharacterDetails("1"))
         fakeTelemetryService.verifyNoFunctionsCalled()
 

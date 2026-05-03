@@ -1,6 +1,6 @@
 package com.cvs.aetna.search.data.transformer
 
-import com.cvs.aetna.search.data.model.Character
+import com.cvs.aetna.search.data.model.response.Character
 import com.cvs.aetna.search.domain.model.CharacterDetails
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -10,6 +10,8 @@ import javax.inject.Inject
 interface CharacterDetailsResponseToDomainTransform {
     fun transform(characterDetailsResponse: Character?): CharacterDetails
 }
+
+private const val MMM_DD_YYYY = "MMM dd, yyyy"
 
 class DefaultCharacterToDomainTransform @Inject constructor() : CharacterDetailsResponseToDomainTransform {
     override fun transform(characterDetailsResponse: Character?): CharacterDetails = CharacterDetails(
@@ -31,7 +33,7 @@ class DefaultCharacterToDomainTransform @Inject constructor() : CharacterDetails
     ): String? = createdAt?.let { createdAt ->
         try {
             val zonedDateTime = ZonedDateTime.parse(createdAt)
-            val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", locale)
+            val formatter = DateTimeFormatter.ofPattern(MMM_DD_YYYY, locale)
             zonedDateTime.format(formatter)
         } catch (_: Exception) {
             createdAt

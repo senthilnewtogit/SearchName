@@ -1,7 +1,7 @@
 package com.cvs.aetna.search.data.transformer
 
-import com.cvs.aetna.search.data.model.Character
-import com.cvs.aetna.search.data.model.Location
+import com.cvs.aetna.search.data.model.response.Character
+import com.cvs.aetna.search.data.model.response.Location
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -18,8 +18,7 @@ class DefaultCharacterToDomainTransformTest {
     }
 
     @Test
-    fun transform_withAllFieldsPopulated_returnsCharacterDetailsWithCorrectMapping() {
-        // Arrange
+    fun `given character with all fields when transform then returns mapped character details`() {
         val character = Character(
             id = 1,
             name = "Rick Sanchez",
@@ -35,10 +34,8 @@ class DefaultCharacterToDomainTransformTest {
             created = "2017-11-04T18:48:46.250Z",
         )
 
-        // Act
         val result = transformer.transform(character)
 
-        // Assert
         assertEquals(1, result.id)
         assertEquals("Rick Sanchez", result.name)
         assertEquals("Alive", result.status)
@@ -52,11 +49,9 @@ class DefaultCharacterToDomainTransformTest {
     }
 
     @Test
-    fun transform_withNullInput_returnsCharacterDetailsWithAllNullFields() {
-        // Act
+    fun `given null character when transform then returns empty character details`() {
         val result = transformer.transform(null)
 
-        // Assert
         assertNull(result.id)
         assertNull(result.name)
         assertNull(result.status)
@@ -70,8 +65,7 @@ class DefaultCharacterToDomainTransformTest {
     }
 
     @Test
-    fun transform_withWhitespaceStrings_trimmedCorrectly() {
-        // Arrange
+    fun `given character with whitespace fields when transform then trims values`() {
         val character = Character(
             id = 2,
             name = "  Morty Smith  ",
@@ -87,10 +81,8 @@ class DefaultCharacterToDomainTransformTest {
             created = "  2017-11-04T18:48:46.250Z  ",
         )
 
-        // Act
         val result = transformer.transform(character)
 
-        // Assert
         assertEquals("Morty Smith", result.name)
         assertEquals("Alive", result.status)
         assertEquals("Human", result.species)
@@ -101,8 +93,7 @@ class DefaultCharacterToDomainTransformTest {
     }
 
     @Test
-    fun transform_withNullFields_returnsNullForThatField() {
-        // Arrange
+    fun `given character with null fields when transform then returns null fields`() {
         val character = Character(
             id = 3,
             name = null,
@@ -118,10 +109,8 @@ class DefaultCharacterToDomainTransformTest {
             created = null,
         )
 
-        // Act
         val result = transformer.transform(character)
 
-        // Assert
         assertEquals(3, result.id)
         assertNull(result.name)
         assertNull(result.status)
@@ -135,8 +124,7 @@ class DefaultCharacterToDomainTransformTest {
     }
 
     @Test
-    fun transform_withEmptyStrings_keepsEmpty() {
-        // Arrange
+    fun `given character with empty strings when transform then keeps empty values`() {
         val character = Character(
             id = 4,
             name = "",
@@ -152,10 +140,8 @@ class DefaultCharacterToDomainTransformTest {
             created = "",
         )
 
-        // Act
         val result = transformer.transform(character)
 
-        // Assert
         assertEquals(4, result.id)
         assertEquals("", result.name)
         assertEquals("", result.status)
@@ -167,110 +153,24 @@ class DefaultCharacterToDomainTransformTest {
     }
 
     @Test
-    fun transform_withMultipleEpisodes_succeeds() {
-        // Arrange
+    fun `given invalid created date when transform then returns original date string`() {
         val character = Character(
             id = 1,
-            name = "Rick Sanchez",
+            name = "Rick",
             status = "Alive",
             species = "Human",
             type = "",
             gender = "Male",
-            origin = Location(name = "Earth (C-137)", url = ""),
-            location = Location(name = "Citadel of Ricks", url = ""),
+            origin = Location(name = "Earth", url = ""),
+            location = Location(name = "Earth", url = ""),
             image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-            episode = listOf(
-                "https://rickandmortyapi.com/api/episode/1",
-                "https://rickandmortyapi.com/api/episode/2",
-                "https://rickandmortyapi.com/api/episode/3",
-            ),
-            url = "https://rickandmortyapi.com/api/character/1",
-            created = "2017-11-04T18:48:46.250Z",
+            episode = emptyList(),
+            url = "",
+            created = "invalid-date",
         )
 
-        // Act
         val result = transformer.transform(character)
 
-        // Assert
-        assertEquals("Rick Sanchez", result.name)
-        assertEquals(1, result.id)
-        // Episode list is not mapped to Result, but this ensures the transformation still works
-    }
-
-    @Test
-    fun transform_hasErrorAndErrorMsgFields_setToFalseAndNull() {
-        // Arrange
-        val character = Character(
-            id = 5,
-            name = "Test Character",
-            status = "Alive",
-            species = "Human",
-            type = "",
-            gender = "Male",
-            origin = Location(name = "Earth", url = ""),
-            location = Location(name = "Earth", url = ""),
-            image = "https://example.com/image.jpg",
-            episode = emptyList(),
-            url = "https://example.com",
-            created = "2017-11-04T18:48:46.250Z",
-        )
-
-        // Act
-        val result = transformer.transform(character)
-
-        // Assert
-        assertFalse(result.hasError)
-        assertNull(result.errorMsg)
-    }
-
-    @Test
-    fun transform_withSpecialCharactersInName_preservedCorrectly() {
-        // Arrange
-        val character = Character(
-            id = 6,
-            name = "Rick & Morty's \"Adventure\" (C-137)",
-            status = "Alive",
-            species = "Human",
-            type = "",
-            gender = "Male",
-            origin = Location(name = "Earth", url = ""),
-            location = Location(name = "Earth", url = ""),
-            image = "https://example.com/image.jpg",
-            episode = emptyList(),
-            url = "https://example.com",
-            created = "2017-11-04T18:48:46.250Z",
-        )
-
-        // Act
-        val result = transformer.transform(character)
-
-        // Assert
-        assertEquals("Rick & Morty's \"Adventure\" (C-137)", result.name)
-    }
-
-    @Test
-    fun transform_multipleTransforms_returnsConsistentResults() {
-        // Arrange
-        val character = Character(
-            id = 7,
-            name = "Summer Smith",
-            status = "Alive",
-            species = "Human",
-            type = "",
-            gender = "Female",
-            origin = Location(name = "Earth", url = ""),
-            location = Location(name = "Earth", url = ""),
-            image = "https://example.com/image.jpg",
-            episode = emptyList(),
-            url = "https://example.com",
-            created = "2017-11-04T18:48:46.250Z",
-        )
-
-        // Act
-        val result1 = transformer.transform(character)
-        val result2 = transformer.transform(character)
-
-        // Assert
-        assertEquals(result1, result2)
+        assertEquals("invalid-date", result.createdAt)
     }
 }

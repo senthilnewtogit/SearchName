@@ -6,12 +6,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+
+private const val LOADING_INDICATOR = "loading_indicator"
 
 @Composable
 fun LoadingIndicator(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier.wrapContentSize(Alignment.Center),
+        modifier = modifier.wrapContentSize(Alignment.Center).testTag(LOADING_INDICATOR),
         contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator()

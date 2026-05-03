@@ -2,7 +2,11 @@ package com.cvs.aetna.search.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cvs.aetna.search.analytics.CharacterDetailsAdobeTagUseCase
+import com.cvs.aetna.search.domain.model.CharacterDetails
+import com.cvs.aetna.search.domain.model.ShareData
 import com.cvs.aetna.search.domain.usecase.CharacterDetailsUseCase
+import com.cvs.aetna.search.domain.usecase.ShareCharacterUseCase
 import com.cvs.aetna.search.logger.TelemetryService
 import com.cvs.aetna.search.presentation.ui.model.CharacterUIDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,20 +33,30 @@ sealed class CharacterDetailsUiState {
 
 sealed class CharacterDetailAction {
     data class FetchDetails(val characterId: String?) : CharacterDetailAction()
+    object Share : CharacterDetailAction()
+    object ShareAppNotFound : CharacterDetailAction()
+    object OnPageLoad : CharacterDetailAction()
 }
 
 sealed class CharacterDetailsEvent {
     data class ShowError(val message: String?) : CharacterDetailsEvent()
+    data class ShareImageData(val shareData: ShareData) : CharacterDetailsEvent()
 }
 
 private const val HANDLED_EXCEPTION = "Handled Exception"
 private const val USE_CASE_EXCEPTION = "UseCase Exception"
+
+const val NO_APP_FOUND = "1000"
+
+const val NO_SHARE_DATA_FOUND = "1001"
 
 @HiltViewModel
 class CharacterDetailsViewModel @Inject constructor(
     private val dispatcher: CoroutineDispatcher,
     private val characterDetailsUseCase: CharacterDetailsUseCase,
     private val telemetryService: TelemetryService,
+    private val shareCharacterUseCase: ShareCharacterUseCase,
+    private val characterDetailsAdobeTagUseCase: CharacterDetailsAdobeTagUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<CharacterDetailsUiState>(
@@ -54,9 +68,11 @@ class CharacterDetailsViewModel @Inject constructor(
     val actions: SendChannel<CharacterDetailAction> = _actions
 
     private val eventChannel = Channel<CharacterDetailsEvent>(capacity = UNLIMITED)
-    private val _events: SendChannel<CharacterDetailsEvent> = eventChannel
-
     val events = eventChannel.receiveAsFlow()
+
+    private var cacheCharacterDetails: CharacterDetails? = null
+
+    private var isPageLoadSent = false
 
     init {
         _actions.consumeAsFlow().onEach { actions ->
@@ -79,13 +95,43 @@ class CharacterDetailsViewModel @Inject constructor(
                 "errorMessage" to (msg ?: "Unknown error"),
             ),
         )
+        characterDetailsAdobeTagUseCase.tagOnError((msg ?: "Unknown error"))
         updateState { CharacterDetailsUiState.Error(message = msg) }
     }
 
     private fun handleAction(actions: CharacterDetailAction) {
         when (actions) {
             is CharacterDetailAction.FetchDetails -> {
+                characterDetailsAdobeTagUseCase.tagOnDetailsFetchAction()
                 fetchCharacterDetails(id = actions.characterId)
+            }
+
+            is CharacterDetailAction.Share -> {
+                characterDetailsAdobeTagUseCase.tagOnDetailsShareAction()
+                shareImageMetaData()
+            }
+
+            CharacterDetailAction.ShareAppNotFound -> {
+                characterDetailsAdobeTagUseCase.tagOnShareAppNotFound()
+                sendEvent(CharacterDetailsEvent.ShowError(message = NO_APP_FOUND))
+            }
+
+            CharacterDetailAction.OnPageLoad -> {
+                if (!isPageLoadSent) {
+                    characterDetailsAdobeTagUseCase.tagOnDetailsScreenLoad()
+                    isPageLoadSent = true
+                }
+            }
+        }
+    }
+
+    private fun shareImageMetaData() {
+        viewModelScope.launch(dispatcher + genericErrorHandling) {
+            cacheCharacterDetails?.let {
+                val shareCharacterImage = shareCharacterUseCase.shareCharacterImage(character = it)
+                sendEvent(CharacterDetailsEvent.ShareImageData(shareData = shareCharacterImage))
+            } ?: run {
+                sendEvent(CharacterDetailsEvent.ShowError(message = NO_SHARE_DATA_FOUND))
             }
         }
     }
@@ -94,8 +140,8 @@ class CharacterDetailsViewModel @Inject constructor(
         _actions.trySend(action)
     }
 
-    fun sendEvent(event: CharacterDetailsEvent) {
-        _events.trySend(event)
+    private fun sendEvent(event: CharacterDetailsEvent) {
+        eventChannel.trySend(event)
     }
 
     private fun fetchCharacterDetails(id: String?) {
@@ -105,6 +151,7 @@ class CharacterDetailsViewModel @Inject constructor(
             if (result.hasError) {
                 onError(type = USE_CASE_EXCEPTION, msg = result.errorMsg)
             } else {
+                cacheCharacterDetails = result
                 updateState {
                     CharacterDetailsUiState.Success(
                         characterDetails = CharacterUIDetails(
@@ -125,7 +172,7 @@ class CharacterDetailsViewModel @Inject constructor(
         }
     }
 
-    fun updateState(update: (CharacterDetailsUiState) -> CharacterDetailsUiState) {
+    private fun updateState(update: (CharacterDetailsUiState) -> CharacterDetailsUiState) {
         _state.value = update(_state.value)
     }
 }

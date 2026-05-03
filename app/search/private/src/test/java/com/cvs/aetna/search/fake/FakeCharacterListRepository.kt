@@ -1,7 +1,9 @@
 package com.cvs.aetna.search.fake
 
 import com.cvs.aetna.search.domain.model.CharacterDetails
+import com.cvs.aetna.search.domain.model.CharacterError
 import com.cvs.aetna.search.domain.model.CharacterList
+import com.cvs.aetna.search.domain.model.CharacterSearch
 import com.cvs.aetna.search.domain.repo.CharacterListRepository
 
 class FakeCharacterListRepository :
@@ -10,14 +12,16 @@ class FakeCharacterListRepository :
 
     override val timesFunctionCalled: MutableMap<Function, Int> = mutableMapOf()
     private var shouldReturnError = false
-    private var errorMessage: String? = null
+    private var errorMessage: CharacterError? = null
 
     sealed class Function {
-        data class GetCharacterList(val name: String) : Function()
+        data class GetCharacterList(val characterSearch: CharacterSearch) : Function()
+
+        data class GetMoreCharacterList(val url: String) : Function()
     }
-    fun setShouldReturnError(shouldError: Boolean, message: String? = null) {
+    fun setShouldReturnError(shouldError: Boolean, characterError: CharacterError? = null) {
         shouldReturnError = shouldError
-        errorMessage = message
+        errorMessage = characterError
     }
 
     fun reset() {
@@ -25,32 +29,57 @@ class FakeCharacterListRepository :
         errorMessage = null
     }
 
-    override suspend fun getCharacterList(name: String): CharacterList {
-        recordCalledFunction(Function.GetCharacterList(name))
+    override suspend fun getCharacterList(characterSearch: CharacterSearch): CharacterList {
+        recordCalledFunction(Function.GetCharacterList(characterSearch))
 
         if (shouldReturnError) {
             return CharacterList(
                 characters = emptyList(),
                 hasMorePage = false,
                 nextPageUrl = null,
-                errorMsg = errorMessage ?: "Fake repository error",
-                hasError = true,
+                errorMsg = errorMessage ?: CharacterError.Unknown("Fake repository error"),
             )
         }
 
         val allCharacters = getMockCharacters()
-        val filteredCharacters = if (name.isBlank()) {
+        val filteredCharacters = if ((characterSearch.name ?: "").isBlank()) {
             allCharacters
         } else {
-            allCharacters.filter { it.name?.contains(name, ignoreCase = true) == true }
+            allCharacters.filter { it.name?.contains(other = characterSearch.name ?: "", ignoreCase = true) == true }
         }
 
         return CharacterList(
             characters = filteredCharacters,
-            hasMorePage = filteredCharacters.size > 3, // Simulate pagination
-            nextPageUrl = if (filteredCharacters.size > 3) "https://rickandmortyapi.com/api/character/?page=2&name=$name" else null,
+            hasMorePage = filteredCharacters.size > 3,
+            totalCount = filteredCharacters.size,
+            nextPageUrl = if (filteredCharacters.size > 3) "https://rickandmortyapi.com/api/character/?page=2&name=$characterSearch" else null,
             errorMsg = null,
-            hasError = false,
+        )
+    }
+
+    override suspend fun getMoreCharacterList(url: String): CharacterList {
+        recordCalledFunction(Function.GetMoreCharacterList(url = url))
+        if (shouldReturnError) {
+            return CharacterList(
+                characters = emptyList(),
+                hasMorePage = false,
+                nextPageUrl = null,
+                errorMsg = errorMessage ?: CharacterError.Unknown("Fake repository error"),
+            )
+        }
+        val allCharacters = getMockCharacters()
+        val filteredCharacters = if (url.isBlank()) {
+            allCharacters
+        } else {
+            allCharacters.filter { it.name?.contains(other = url, ignoreCase = true) == true }
+        }
+
+        return CharacterList(
+            characters = filteredCharacters,
+            hasMorePage = filteredCharacters.size > 3,
+            totalCount = filteredCharacters.size,
+            nextPageUrl = if (filteredCharacters.size > 3) "https://rickandmortyapi.com/api/character/?page=2&name=$url" else null,
+            errorMsg = null,
         )
     }
 

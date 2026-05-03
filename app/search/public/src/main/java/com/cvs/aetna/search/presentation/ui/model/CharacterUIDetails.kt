@@ -1,8 +1,8 @@
 package com.cvs.aetna.search.presentation.ui.model
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 
-@Stable
+@Immutable
 data class CharacterUIDetails(
     val id: Int? = null,
     val name: String? = null,

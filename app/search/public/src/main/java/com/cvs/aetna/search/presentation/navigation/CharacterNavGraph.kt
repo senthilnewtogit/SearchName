@@ -1,6 +1,6 @@
 package com.cvs.aetna.search.presentation.navigation
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -11,8 +11,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.cvs.aetna.search.presentation.ui.model.CharacterFilterUiState
 import com.cvs.aetna.search.presentation.ui.screen.CharacterDetailsRouteScreen
 import com.cvs.aetna.search.presentation.ui.screen.CharacterListScreen
+import com.cvs.aetna.search.presentation.viewmodel.CharacterDetailAction
+import com.cvs.aetna.search.presentation.viewmodel.CharacterDetailsViewModel
 import com.cvs.aetna.search.presentation.viewmodel.CharacterSearchAction
 import com.cvs.aetna.search.presentation.viewmodel.CharacterSearchEvent
 import com.cvs.aetna.search.presentation.viewmodel.CharacterSearchViewModel
@@ -24,26 +27,30 @@ fun CharacterNavGraph(
 ) {
     val navHostController = rememberNavController()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(characterSearchViewModel) {
         characterSearchViewModel.events.collect { event ->
             when (event) {
                 is CharacterSearchEvent.NavigateToDetails -> {
-                    navHostController.navigate(Route.Details.createRoute(event.characterId))
+                    navHostController.navigate(Route.Details.createRoute(event.characterId)) {
+                        popUpTo(Route.Search.route)
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 }
             }
         }
     }
-
-    val state = characterSearchViewModel.state.collectAsStateWithLifecycle()
-    Column(modifier = modifier) {
+    val uiState = characterSearchViewModel.state.collectAsStateWithLifecycle()
+    val searchFilterState = characterSearchViewModel.filterState.collectAsStateWithLifecycle()
+    SharedTransitionLayout {
         NavHost(
             navController = navHostController,
             startDestination = Route.Search.route,
-
+            modifier = modifier,
         ) {
             composable(Route.Search.route) {
                 CharacterListScreen(
-                    characterSearchUiState = state.value,
+                    characterSearchUiState = uiState.value,
                     onCharacterClick = { characterId ->
                         characterSearchViewModel.sendAction(
                             CharacterSearchAction.OnCharacterClick(
@@ -54,6 +61,29 @@ fun CharacterNavGraph(
                     onCharacterType = { characterTyped ->
                         characterSearchViewModel.sendAction(
                             CharacterSearchAction.Search(characterTyped),
+                        )
+                    },
+                    animatedVisibilityScope = this,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    searchFilterState = searchFilterState.value,
+                    onResetFilter = {
+                        characterSearchViewModel.sendAction(
+                            CharacterSearchAction.OnResetFilter,
+                        )
+                    },
+                    onFilterUpdate = { searchFilterState: CharacterFilterUiState ->
+                        characterSearchViewModel.sendAction(
+                            CharacterSearchAction.OnFilterUpdate(filterUiState = searchFilterState),
+                        )
+                    },
+                    onEndOfList = {
+                        characterSearchViewModel.sendAction(
+                            CharacterSearchAction.ReachedEndOfList,
+                        )
+                    },
+                    onPageLoad = {
+                        characterSearchViewModel.sendAction(
+                            CharacterSearchAction.OnPageLoad,
                         )
                     },
                 )
@@ -67,7 +97,20 @@ fun CharacterNavGraph(
                 ),
             ) { backStackEntry ->
                 val id = backStackEntry.arguments?.getString(Route.Details.ARG_ID)
-                CharacterDetailsRouteScreen(id = id)
+                val characterDetailsViewModel: CharacterDetailsViewModel =
+                    hiltViewModel<CharacterDetailsViewModel>(backStackEntry)
+                CharacterDetailsRouteScreen(
+                    id = id,
+                    animatedVisibilityScope = this,
+                    sharedTransitionScope = this@SharedTransitionLayout,
+                    characterDetailsViewModel = characterDetailsViewModel,
+                    shareOnClick = {
+                        characterDetailsViewModel.sendAction(CharacterDetailAction.Share)
+                    },
+                    onPageLoad = {
+                        characterDetailsViewModel.sendAction(CharacterDetailAction.OnPageLoad)
+                    },
+                )
             }
         }
     }
@@ -76,6 +119,4 @@ fun CharacterNavGraph(
 @Preview(showBackground = true)
 @Composable
 fun CharacterNavGraphPreview() {
-    // Navigation preview is best handled by previewing individual screens
-    // due to ViewModel dependencies, but we've added CharacterListScreenPreview.
 }

@@ -1,12 +1,15 @@
 package com.cvs.aetna.search.presentation.ui.screen.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,14 +26,16 @@ import com.cvs.aetna.search.domain.model.CharacterDetails
 import com.cvs.aetna.search.pub.R
 
 @Composable
-fun CharacterItem(
+fun CharacterListItem(
     name: String?,
     imageUrl: String?,
     id: Int?,
     onCharacterClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null,
 ) {
-    val characterName = stringResource(R.string.character_name)
+    val characterName = stringResource(R.string.ally_character_label)
     Column(
         modifier = modifier
             .padding(8.dp)
@@ -46,28 +51,52 @@ fun CharacterItem(
         horizontalAlignment = Alignment.CenterHorizontally,
 
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(imageUrl),
-            contentDescription = null,
-            modifier = Modifier
-                .size(100.dp)
-                .semantics { hideFromAccessibility() },
-        )
-        Text(
-            text = name.orEmpty().trim(),
-            maxLines = 2,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium,
-            overflow = TextOverflow.Ellipsis,
-            softWrap = true,
-            modifier = Modifier.semantics { hideFromAccessibility() },
-        )
+        with(sharedTransitionScope) {
+            Image(
+                painter = rememberAsyncImagePainter(imageUrl),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(100.dp)
+                    .semantics { hideFromAccessibility() }
+                    .then(
+                        if (animatedVisibilityScope == null) {
+                            Modifier
+                        } else {
+                            Modifier.sharedElement(
+                                sharedContentState = rememberSharedContentState(key = "image/$id"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = { _, _ -> tween(durationMillis = 1000) },
+                            )
+                        },
+                    ),
+            )
+            TextAuto(
+                text = name.orEmpty().trim(),
+                maxLines = 2,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .semantics { hideFromAccessibility() }
+                    .then(
+                        if (animatedVisibilityScope == null) {
+                            Modifier
+                        } else {
+                            Modifier.sharedElement(
+                                sharedContentState = rememberSharedContentState(key = "text/$id"),
+                                animatedVisibilityScope = animatedVisibilityScope,
+                                boundsTransform = { _, _ -> tween(durationMillis = 1000) },
+                            )
+                        },
+                    ),
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CharacterItemPreview() {
+fun CharacterListItemPreview() {
     val characterDetails = CharacterDetails(
         name = "Rick Sanchez",
         imageUrl = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
@@ -76,11 +105,15 @@ fun CharacterItemPreview() {
         name = "Rick Sanchez",
         imageUrl = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
     )
-    CharacterItem(
-        name = characterDetails.name,
-        imageUrl = characterDetails1.imageUrl,
-        id = characterDetails1.id,
-        onCharacterClick = {},
-        modifier = Modifier,
-    )
+    SharedTransitionLayout {
+        CharacterListItem(
+            name = characterDetails.name,
+            imageUrl = characterDetails1.imageUrl,
+            id = characterDetails1.id,
+            onCharacterClick = {},
+            modifier = Modifier,
+            animatedVisibilityScope = null,
+            sharedTransitionScope = this@SharedTransitionLayout,
+        )
+    }
 }

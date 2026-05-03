@@ -18,13 +18,15 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
+private const val END_POINT = "https://rickandmortyapi.com"
+
 @Module
 @InstallIn(SingletonComponent::class)
 object CharacterListDIInjector {
 
     @Provides
     @Singleton
-    fun privateCharacterListAPI(): CharacterNameAPI = Retrofit.Builder().baseUrl("https://rickandmortyapi.com").addConverterFactory(
+    fun privateCharacterListAPI(): CharacterNameAPI = Retrofit.Builder().baseUrl(END_POINT).addConverterFactory(
         GsonConverterFactory.create(),
     ).build()
         .create(CharacterNameAPI::class.java)
@@ -36,17 +38,17 @@ interface CharacterListBindingsModule {
 
     @Binds
     @Singleton
-    fun getCharacterListToDomainTransform(impl: DefaultCharacterListToDomainTransform): CharacterResponseToDomainTransform
+    fun bindCharacterListToDomainTransform(impl: DefaultCharacterListToDomainTransform): CharacterResponseToDomainTransform
 
     @Binds
     @Singleton
-    fun getCharacterListRepository(impl: DefaultCharacterListRepository): CharacterListRepository
+    fun bindCharacterListRepository(impl: DefaultCharacterListRepository): CharacterListRepository
 
     @Binds
     @Singleton
-    fun getCharacterDetailsToDomainTransform(impl: DefaultCharacterToDomainTransform): CharacterDetailsResponseToDomainTransform
+    fun bindCharacterDetailsToDomainTransform(impl: DefaultCharacterToDomainTransform): CharacterDetailsResponseToDomainTransform
 
     @Binds
     @Singleton
-    fun getCharacterDetailsRepository(impl: DefaultCharacterDetailsRepository): CharacterDetailsRepository
+    fun bindCharacterDetailsRepository(impl: DefaultCharacterDetailsRepository): CharacterDetailsRepository
 }

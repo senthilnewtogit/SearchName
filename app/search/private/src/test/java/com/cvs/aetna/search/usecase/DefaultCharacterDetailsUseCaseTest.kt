@@ -28,7 +28,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withId1_returnsRickSanchez() = runTest {
+    fun `given id 1, when getCharacterDetails called, then return Rick Sanchez`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
         assertNotNull(result)
@@ -41,7 +41,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withId2_returnsMortySmith() = runTest {
+    fun `given id 2, when getCharacterDetails called, then return Morty Smith`() = runTest {
         val result = useCase.getCharacterDetails("2")
 
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("2"))
@@ -53,7 +53,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withId3_returnsSummerSmith() = runTest {
+    fun `given id 3, when getCharacterDetails called, then return Summer Smith`() = runTest {
         val result = useCase.getCharacterDetails("3")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("3"))
 
@@ -65,7 +65,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withId4_returnsBethSmith() = runTest {
+    fun `given id 4, when getCharacterDetails called, then return Beth Smith`() = runTest {
         val result = useCase.getCharacterDetails("4")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("4"))
 
@@ -75,7 +75,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withId5_returnsJerrySmith() = runTest {
+    fun `given id 5, when getCharacterDetails called, then return Jerry Smith`() = runTest {
         val result = useCase.getCharacterDetails("5")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("5"))
 
@@ -85,7 +85,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_returnsAllRequiredFields() = runTest {
+    fun `when getCharacterDetails called, then return all required fields`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -99,7 +99,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_returnsCorrectOrigin() = runTest {
+    fun `when getCharacterDetails called, then return correct origin`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -107,7 +107,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_returnsValidImageUrl() = runTest {
+    fun `when getCharacterDetails called, then return valid image url`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -116,7 +116,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_returnsValidCreatedDate() = runTest {
+    fun `when getCharacterDetails called, then return valid created date`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -125,7 +125,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_noErrorForValidId() = runTest {
+    fun `given valid id, when getCharacterDetails called, then no error is returned`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -133,10 +133,8 @@ class DefaultCharacterDetailsUseCaseTest {
         assertNull(result.errorMsg)
     }
 
-    // ==================== Invalid IDs ====================
-
     @Test
-    fun getCharacterDetails_withInvalidId999_returnsError() = runTest {
+    fun `given invalid id 999, when getCharacterDetails called, then return error`() = runTest {
         val result = useCase.getCharacterDetails("999")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("999"))
 
@@ -145,7 +143,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withNonNumericId_returnsError() = runTest {
+    fun `given non-numeric id, when getCharacterDetails called, then return error`() = runTest {
         val result = useCase.getCharacterDetails("abc")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("abc"))
 
@@ -154,7 +152,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withNegativeId_returnsError() = runTest {
+    fun `given negative id, when getCharacterDetails called, then return error`() = runTest {
         val result = useCase.getCharacterDetails("-1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("-1"))
 
@@ -162,7 +160,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withEmptyId_returnsError() = runTest {
+    fun `given empty id, when getCharacterDetails called, then return error`() = runTest {
         val result = useCase.getCharacterDetails("")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails(""))
 
@@ -170,7 +168,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withSpecialCharacterId_returnsError() = runTest {
+    fun `given special character id, when getCharacterDetails called, then return error`() = runTest {
         val result = useCase.getCharacterDetails("@#$")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("@#$"))
 
@@ -178,7 +176,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withZeroId_returnsError() = runTest {
+    fun `given zero id, when getCharacterDetails called, then return error`() = runTest {
         val result = useCase.getCharacterDetails("0")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("0"))
 
@@ -186,7 +184,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_whenRepositoryReturnsError_propagatesError() = runTest {
+    fun `when repository returns error, then getCharacterDetails propagates error`() = runTest {
         fakeRepository.setShouldReturnError(true, "Repository Error")
 
         val result = useCase.getCharacterDetails("1")
@@ -197,7 +195,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_whenRepositoryReturnsError_noData() = runTest {
+    fun `when repository returns error, then getCharacterDetails returns no data`() = runTest {
         fakeRepository.setShouldReturnError(true)
 
         val result = useCase.getCharacterDetails("1")
@@ -208,11 +206,11 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_afterErrorRecovery_succeeds() = runTest {
+    fun `given error recovery, when getCharacterDetails called, then succeeds`() = runTest {
         fakeRepository.setShouldReturnError(true)
         val errorResult = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
-        // Reset
+
         fakeRepository.setShouldReturnError(false)
 
         val successResult = useCase.getCharacterDetails("1")
@@ -223,10 +221,8 @@ class DefaultCharacterDetailsUseCaseTest {
         assertEquals("Rick Sanchez", successResult.name)
     }
 
-    // ==================== Multiple Calls ====================
-
     @Test
-    fun getCharacterDetails_multipleCallsWithDifferentIds_returnCorrectResults() = runTest {
+    fun `given multiple calls with different ids, then return correct results`() = runTest {
         val result1 = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
         val result2 = useCase.getCharacterDetails("2")
@@ -244,7 +240,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_multipleCallsWithSameId_returnConsistentResults() = runTest {
+    fun `given multiple calls with same id, then return consistent results`() = runTest {
         val result1 = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
         val result2 = useCase.getCharacterDetails("1")
@@ -257,7 +253,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_callAllValidIds_allSucceed() = runTest {
+    fun `when all valid ids called, then all succeed`() = runTest {
         val results = (1..5).map {
             useCase.getCharacterDetails(it.toString())
         }
@@ -273,7 +269,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_rickSanchez_hasCorrectAllData() = runTest {
+    fun `given Rick Sanchez id, when getCharacterDetails called, then has correct data`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -285,7 +281,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_mortySmith_hasCorrectAllData() = runTest {
+    fun `given Morty Smith id, when getCharacterDetails called, then has correct data`() = runTest {
         val result = useCase.getCharacterDetails("2")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("2"))
 
@@ -296,7 +292,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_summerSmith_isCorrect() = runTest {
+    fun `given Summer Smith id, when getCharacterDetails called, then is correct`() = runTest {
         val result = useCase.getCharacterDetails("3")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("3"))
 
@@ -305,7 +301,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_bethSmith_isCorrect() = runTest {
+    fun `given Beth Smith id, when getCharacterDetails called, then is correct`() = runTest {
         val result = useCase.getCharacterDetails("4")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("4"))
 
@@ -314,7 +310,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_jerrySmith_isCorrect() = runTest {
+    fun `given Jerry Smith id, when getCharacterDetails called, then is correct`() = runTest {
         val result = useCase.getCharacterDetails("5")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("5"))
 
@@ -323,7 +319,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_idTypeIsCorrect() = runTest {
+    fun `when getCharacterDetails called, then id type is correct`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -332,7 +328,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_nameIsNotEmpty() = runTest {
+    fun `when getCharacterDetails called, then name is not empty`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -341,7 +337,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_statusIsAlive() = runTest {
+    fun `when getCharacterDetails called for any character, then status is Alive`() = runTest {
         (1..5).forEach { id ->
             val result = useCase.getCharacterDetails(id.toString())
             fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails(id.toString()))
@@ -350,7 +346,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_speciesIsHuman() = runTest {
+    fun `when getCharacterDetails called for any character, then species is Human`() = runTest {
         (1..5).forEach { id ->
             val result = useCase.getCharacterDetails(id.toString())
             fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails(id.toString()))
@@ -359,7 +355,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_imageUrlIsValid() = runTest {
+    fun `when getCharacterDetails called, then image url is valid`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
 
@@ -368,7 +364,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withWhitespaceId_isHandledAsInvalid() = runTest {
+    fun `given whitespace id, when getCharacterDetails called, then is handled as invalid`() = runTest {
         val result = useCase.getCharacterDetails("  1  ")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("  1  "))
 
@@ -376,7 +372,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withVeryLargeId_returnsError() = runTest {
+    fun `given very large id, when getCharacterDetails called, then return error`() = runTest {
         val result = useCase.getCharacterDetails("99999999999")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("99999999999"))
 
@@ -384,7 +380,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_withFloatId_returnsError() = runTest {
+    fun `given float id, when getCharacterDetails called, then return error`() = runTest {
         val result = useCase.getCharacterDetails("1.5")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1.5"))
 
@@ -392,7 +388,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_delegatesToRepository() = runTest {
+    fun `when getCharacterDetails called, then delegate to repository`() = runTest {
         val result = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
         assertFalse(result.hasError)
@@ -400,7 +396,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_repositoryErrorIsPropagated() = runTest {
+    fun `when repository error occurs, then getCharacterDetails propagates error`() = runTest {
         fakeRepository.setShouldReturnError(true, "Test Error")
 
         val result = useCase.getCharacterDetails("1")
@@ -411,7 +407,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_useCaseCanFetchAnyCharacter() = runTest {
+    fun `usecase can fetch any character successfully`() = runTest {
         val rick = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
         val morty = useCase.getCharacterDetails("2")
@@ -431,7 +427,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_useCaseHandlesSequentialCalls() = runTest {
+    fun `usecase handles sequential calls correctly`() = runTest {
         val characters = mutableListOf<String>()
         for (i in 1..5) {
             val result = useCase.getCharacterDetails(i.toString())
@@ -445,7 +441,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_useCaseWithErrorSimulation() = runTest {
+    fun `usecase recovery after error works correctly`() = runTest {
         fakeRepository.setShouldReturnError(true, "Network Error")
 
         val result = useCase.getCharacterDetails("1")
@@ -454,7 +450,6 @@ class DefaultCharacterDetailsUseCaseTest {
         assertTrue(result.hasError)
         assertEquals("Network Error", result.errorMsg)
 
-        // Reset and verify recovery
         fakeRepository.setShouldReturnError(false)
         val recoveredResult = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
@@ -462,7 +457,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_useCaseIsFunctionalRepositoryWrapper() = runTest {
+    fun `usecase is functional repository wrapper`() = runTest {
         val result1 = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
         val result2 = useCase.getCharacterDetails("2")
@@ -473,7 +468,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_multipleUseCaseInstancesWithSameRepository() = runTest {
+    fun `multiple usecase instances with same repository work correctly`() = runTest {
         val useCase2 = DefaultCharacterDetailsUseCase(fakeRepository)
 
         val result1 = useCase.getCharacterDetails("1")
@@ -486,7 +481,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_useCaseResetsState() = runTest {
+    fun `usecase resets state correctly`() = runTest {
         fakeRepository.setShouldReturnError(true)
 
         val errorResult = useCase.getCharacterDetails("1")
@@ -500,7 +495,7 @@ class DefaultCharacterDetailsUseCaseTest {
     }
 
     @Test
-    fun getCharacterDetails_handlesBoundaryIds() = runTest {
+    fun `usecase handles boundary ids correctly`() = runTest {
         val validMin = useCase.getCharacterDetails("1")
         fakeRepository.verifyFunctionCalled(FakeCharacterDetailsRepository.Function.GetCharacterDetails("1"))
         val validMax = useCase.getCharacterDetails("5")

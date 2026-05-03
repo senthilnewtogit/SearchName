@@ -1,10 +1,13 @@
 package com.cvs.aetna.search.fake
 
-import com.cvs.aetna.search.data.model.Character
-import com.cvs.aetna.search.data.model.CharacterResponse
-import com.cvs.aetna.search.data.model.Location
-import com.cvs.aetna.search.data.model.PaginationInfo
+import com.cvs.aetna.search.data.model.response.Character
+import com.cvs.aetna.search.data.model.response.CharacterResponse
+import com.cvs.aetna.search.data.model.response.Location
+import com.cvs.aetna.search.data.model.response.PaginationInfo
 import com.cvs.aetna.search.data.remote.CharacterNameAPI
+import okhttp3.Headers
+import okhttp3.Protocol
+import okhttp3.Request
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -13,33 +16,78 @@ class FakeCharacterNameAPI :
     FakeFunctionHelper<FakeCharacterNameAPI.Function> {
 
     override val timesFunctionCalled: MutableMap<Function, Int> = mutableMapOf()
+
     sealed class Function {
-        data class GetListOfCharacter(val name: String?, val page: Int?) : Function()
+        data class GetListOfCharacter(val query: Map<String, String>) : Function()
         data class GetCharacterDetails(val id: String?) : Function()
+        data class GetMoreListOfCharacter(val url: String) : Function()
     }
 
     private var shouldReturnError = false
     private var errorMessage: String? = null
+    private var errorCode: Int = 404
+    private var headers: Headers = Headers.headersOf()
 
-    fun setShouldReturnError(shouldError: Boolean, message: String? = null) {
+    fun setShouldReturnError(
+        shouldError: Boolean,
+        message: String? = null,
+        code: Int = 404,
+        responseHeaders: Headers = Headers.headersOf(),
+    ) {
         shouldReturnError = shouldError
         errorMessage = message
+        errorCode = code
+        headers = responseHeaders
+    }
+
+    private fun <T> createErrorResponse(code: Int, message: String?, headers: Headers): Response<T> {
+        val errorJson = "{\"error\":\"$message\"}"
+        val body = ResponseBody.create(null, errorJson)
+        val rawResponse = okhttp3.Response.Builder()
+            .code(code)
+            .message(message ?: "Error")
+            .protocol(Protocol.HTTP_1_1)
+            .request(Request.Builder().url("http://localhost/").build())
+            .headers(headers)
+            .build()
+        return Response.error(body, rawResponse)
     }
 
     override suspend fun getListOfCharacter(
-        name: String?,
-        page: Int?,
+        query: Map<String, String>,
     ): Response<CharacterResponse> {
-        recordCalledFunction(Function.GetListOfCharacter(name, page))
+        val name = query["name"]
+        val page = (query["page"] ?: "1").toInt()
+        recordCalledFunction(Function.GetListOfCharacter(query = query))
         return if (shouldReturnError) {
-            Response.error(404, ResponseBody.create(null, errorMessage ?: "Not Found"))
+            createErrorResponse(errorCode, errorMessage, headers)
         } else {
             val mockCharacters = getMockCharacterList(name)
             val paginationInfo = PaginationInfo(
                 count = mockCharacters.size,
                 pages = 1,
-                next = if (page == null || page < 5) "https://rickandmortyapi.com/api/character/?page=${(page ?: 1) + 1}&name=$name" else null,
-                prev = if (page != null && page > 1) "https://rickandmortyapi.com/api/character/?page=${page - 1}&name=$name" else null,
+                next = if (page < 5) "https://rickandmortyapi.com/api/character/?page=${(page ?: 1) + 1}&name=$name" else null,
+                prev = if (page > 1) "https://rickandmortyapi.com/api/character/?page=${page - 1}&name=$name" else null,
+            )
+            val characterResponse = CharacterResponse(
+                info = paginationInfo,
+                results = mockCharacters,
+            )
+            Response.success(characterResponse)
+        }
+    }
+
+    override suspend fun getMoreListOfCharacter(url: String): Response<CharacterResponse> {
+        recordCalledFunction(Function.GetMoreListOfCharacter(url = url))
+        return if (shouldReturnError) {
+            createErrorResponse(errorCode, errorMessage, headers)
+        } else {
+            val mockCharacters = getMockCharacterList(null)
+            val paginationInfo = PaginationInfo(
+                count = mockCharacters.size,
+                pages = 1,
+                next = null,
+                prev = null,
             )
             val characterResponse = CharacterResponse(
                 info = paginationInfo,
@@ -54,7 +102,7 @@ class FakeCharacterNameAPI :
     ): Response<Character> {
         recordCalledFunction(Function.GetCharacterDetails(id))
         return if (shouldReturnError) {
-            Response.error(404, ResponseBody.create(null, errorMessage ?: "Not Found"))
+            createErrorResponse(errorCode, errorMessage ?: "Not Found", headers)
         } else {
             val character = getMockCharacterById(id)
             if (character != null) {

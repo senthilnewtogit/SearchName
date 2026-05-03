@@ -26,12 +26,14 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    implementation(libs.coil.network.okhttp)
     // Retrofit
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp.logging)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
-
+    testImplementation(libs.mockito.kotlin)
 }

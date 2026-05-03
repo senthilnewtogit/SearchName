@@ -1,11 +1,12 @@
 package com.cvs.aetna.search.data.remote
 
-import com.cvs.aetna.search.data.model.Character
-import com.cvs.aetna.search.data.model.CharacterResponse
+import com.cvs.aetna.search.data.model.response.Character
+import com.cvs.aetna.search.data.model.response.CharacterResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.QueryMap
+import retrofit2.http.Url
 
 interface CharacterNameAPI {
 
@@ -16,8 +17,12 @@ interface CharacterNameAPI {
 
     @GET(LIST_OF_CHARACTER)
     suspend fun getListOfCharacter(
-        @Query("name") name: String? = null,
-        @Query("page") page: Int? = null,
+        @QueryMap query: Map<String, String>,
+    ): Response<CharacterResponse>
+
+    @GET
+    suspend fun getMoreListOfCharacter(
+        @Url url: String,
     ): Response<CharacterResponse>
 
     @GET(CHARACTER_DETAILS)

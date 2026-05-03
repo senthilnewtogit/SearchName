@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":app:search:public"))
     implementation(project(":app:search:private"))
 
+    implementation(libs.coil.compose)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 }

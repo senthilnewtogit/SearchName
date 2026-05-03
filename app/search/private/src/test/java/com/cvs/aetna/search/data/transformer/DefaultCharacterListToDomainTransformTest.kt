@@ -1,9 +1,9 @@
 package com.cvs.aetna.search.data.transformer
 
-import com.cvs.aetna.search.data.model.Character
-import com.cvs.aetna.search.data.model.CharacterResponse
-import com.cvs.aetna.search.data.model.Location
-import com.cvs.aetna.search.data.model.PaginationInfo
+import com.cvs.aetna.search.data.model.response.Character
+import com.cvs.aetna.search.data.model.response.CharacterResponse
+import com.cvs.aetna.search.data.model.response.Location
+import com.cvs.aetna.search.data.model.response.PaginationInfo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -21,8 +21,7 @@ class DefaultCharacterListToDomainTransformTest {
     }
 
     @Test
-    fun transform_withValidCharacterResponse_returnsCorrectCharacterList() {
-        // Arrange
+    fun `given valid response when transform then returns mapped character list`() {
         val character = Character(
             id = 1,
             name = "Rick Sanchez",
@@ -30,8 +29,14 @@ class DefaultCharacterListToDomainTransformTest {
             species = "Human",
             type = "",
             gender = "Male",
-            origin = Location(name = "Earth (C-137)", url = "https://rickandmortyapi.com/api/location/1"),
-            location = Location(name = "Citadel of Ricks", url = "https://rickandmortyapi.com/api/location/3"),
+            origin = Location(
+                name = "Earth (C-137)",
+                url = "https://rickandmortyapi.com/api/location/1",
+            ),
+            location = Location(
+                name = "Citadel of Ricks",
+                url = "https://rickandmortyapi.com/api/location/3",
+            ),
             image = "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
             episode = listOf("https://rickandmortyapi.com/api/episode/1"),
             url = "https://rickandmortyapi.com/api/character/1",
@@ -50,20 +55,20 @@ class DefaultCharacterListToDomainTransformTest {
             results = listOf(character),
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertEquals(1, result.characters?.size)
         assertTrue(result.hasMorePage)
-        assertEquals("https://rickandmortyapi.com/api/character/?page=2&name=rick", result.nextPageUrl)
+        assertEquals(
+            "https://rickandmortyapi.com/api/character/?page=2&name=rick",
+            result.nextPageUrl,
+        )
         assertNull(result.errorMsg)
         assertFalse(result.hasError)
     }
 
     @Test
-    fun transform_withMultipleCharacters_mapsAllCharactersCorrectly() {
-        // Arrange
+    fun `given multiple characters when transform then returns all mapped correctly`() {
         val characters = listOf(
             Character(
                 id = 1,
@@ -121,10 +126,8 @@ class DefaultCharacterListToDomainTransformTest {
             results = characters,
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertEquals(3, result.characters?.size)
         assertEquals("Rick Sanchez", result.characters?.get(0)?.name)
         assertEquals("Morty Smith", result.characters?.get(1)?.name)
@@ -132,11 +135,9 @@ class DefaultCharacterListToDomainTransformTest {
     }
 
     @Test
-    fun transform_withNullResponse_returnsEmptyCharacterList() {
-        // Act
+    fun `given null response when transform then returns empty result`() {
         val result = transformer.transform(null)
 
-        // Assert
         assertEquals(emptyList<Any>(), result.characters)
         assertFalse(result.hasMorePage)
         assertNull(result.nextPageUrl)
@@ -145,8 +146,7 @@ class DefaultCharacterListToDomainTransformTest {
     }
 
     @Test
-    fun transform_withEmptyResults_returnsEmptyList() {
-        // Arrange
+    fun `given empty results when transform then returns empty character list`() {
         val paginationInfo = PaginationInfo(
             count = 0,
             pages = 0,
@@ -159,18 +159,15 @@ class DefaultCharacterListToDomainTransformTest {
             results = emptyList(),
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertEquals(emptyList<Any>(), result.characters)
         assertFalse(result.hasMorePage)
         assertNull(result.nextPageUrl)
     }
 
     @Test
-    fun transform_withNextPageUrl_hasMorePageSetToTrue() {
-        // Arrange
+    fun `given next page url when transform then sets hasMorePage true`() {
         val paginationInfo = PaginationInfo(
             count = 50,
             pages = 3,
@@ -183,17 +180,14 @@ class DefaultCharacterListToDomainTransformTest {
             results = emptyList(),
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertTrue(result.hasMorePage)
         assertEquals("https://rickandmortyapi.com/api/character/?page=2", result.nextPageUrl)
     }
 
     @Test
-    fun transform_withoutNextPageUrl_hasMorePageSetToFalse() {
-        // Arrange
+    fun `given no next page url when transform then sets hasMorePage false`() {
         val paginationInfo = PaginationInfo(
             count = 50,
             pages = 1,
@@ -206,17 +200,14 @@ class DefaultCharacterListToDomainTransformTest {
             results = emptyList(),
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertFalse(result.hasMorePage)
         assertNull(result.nextPageUrl)
     }
 
     @Test
-    fun transform_withResponseError_setsErrorFields() {
-        // Arrange
+    fun `given empty response when transform then sets error fields correctly`() {
         val paginationInfo = PaginationInfo(
             count = 0,
             pages = 0,
@@ -227,21 +218,17 @@ class DefaultCharacterListToDomainTransformTest {
         val characterResponse = CharacterResponse(
             info = paginationInfo,
             results = null,
-            error = "Not Found",
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
-        assertTrue(result.hasError)
-        assertEquals("Not Found", result.errorMsg)
+        assertFalse(result.hasError)
+        assertNull(result.errorMsg)
         assertEquals(emptyList<Any>(), result.characters)
     }
 
     @Test
-    fun transform_withNullResultsList_returnsEmptyList() {
-        // Arrange
+    fun `given null results when transform then returns empty list`() {
         val paginationInfo = PaginationInfo(
             count = 0,
             pages = 0,
@@ -254,17 +241,14 @@ class DefaultCharacterListToDomainTransformTest {
             results = null,
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertEquals(emptyList<Any>(), result.characters)
         assertFalse(result.hasMorePage)
     }
 
     @Test
-    fun transform_withCharacterNamesContainingWhitespace_trimmedCorrectly() {
-        // Arrange
+    fun `given character fields with whitespace when transform then trims values`() {
         val characters = listOf(
             Character(
                 id = 1,
@@ -294,10 +278,8 @@ class DefaultCharacterListToDomainTransformTest {
             results = characters,
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertEquals(1, result.characters?.size)
         assertEquals("Rick Sanchez", result.characters?.get(0)?.name)
         assertEquals("Alive", result.characters?.get(0)?.status)
@@ -305,8 +287,7 @@ class DefaultCharacterListToDomainTransformTest {
     }
 
     @Test
-    fun transform_withNullInfoObject_handlesGracefully() {
-        // Arrange
+    fun `given null pagination info when transform then handles safely`() {
         val character = Character(
             id = 1,
             name = "Rick Sanchez",
@@ -327,18 +308,15 @@ class DefaultCharacterListToDomainTransformTest {
             results = listOf(character),
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertEquals(1, result.characters?.size)
         assertFalse(result.hasMorePage)
         assertNull(result.nextPageUrl)
     }
 
     @Test
-    fun transform_preservesCharacterIdCorrectly() {
-        // Arrange
+    fun `given character id when transform then preserves id correctly`() {
         val characters = listOf(
             Character(
                 id = 42,
@@ -368,16 +346,13 @@ class DefaultCharacterListToDomainTransformTest {
             results = characters,
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertEquals(42, result.characters?.get(0)?.id)
     }
 
     @Test
-    fun transform_multipleTransformsWithSameInput_returnsConsistentResults() {
-        // Arrange
+    fun `given same input when transform called multiple times then returns consistent result`() {
         val paginationInfo = PaginationInfo(
             count = 100,
             pages = 5,
@@ -405,11 +380,9 @@ class DefaultCharacterListToDomainTransformTest {
             results = listOf(character),
         )
 
-        // Act
         val result1 = transformer.transform(characterResponse)
         val result2 = transformer.transform(characterResponse)
 
-        // Assert
         assertEquals(result1.characters?.size, result2.characters?.size)
         assertEquals(result1.hasMorePage, result2.hasMorePage)
         assertEquals(result1.nextPageUrl, result2.nextPageUrl)
@@ -417,8 +390,7 @@ class DefaultCharacterListToDomainTransformTest {
     }
 
     @Test
-    fun transform_responseWithPaginationData_preservesAllPaginationInfo() {
-        // Arrange
+    fun `given pagination info when transform then preserves pagination data correctly`() {
         val paginationInfo = PaginationInfo(
             count = 827,
             pages = 42,
@@ -431,18 +403,15 @@ class DefaultCharacterListToDomainTransformTest {
             results = emptyList(),
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
 
-        // Assert
         assertTrue(result.hasMorePage)
         assertEquals("https://rickandmortyapi.com/api/character/?page=2", result.nextPageUrl)
         assertNull(result.errorMsg)
     }
 
     @Test
-    fun transform_characterWithImageUrl_preservedInDomain() {
-        // Arrange
+    fun `given character with image url when transform then preserves image url`() {
         val imageUrl = "https://rickandmortyapi.com/api/character/avatar/1.jpeg"
         val character = Character(
             id = 1,
@@ -471,10 +440,7 @@ class DefaultCharacterListToDomainTransformTest {
             results = listOf(character),
         )
 
-        // Act
         val result = transformer.transform(characterResponse)
-
-        // Assert
         assertEquals(imageUrl, result.characters?.get(0)?.imageUrl)
     }
 }

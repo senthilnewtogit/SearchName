@@ -1,7 +1,7 @@
 package com.cvs.aetna.search.data.transformer
 
-import com.cvs.aetna.search.data.model.CharacterResponse
-import com.cvs.aetna.search.data.model.toDomain
+import com.cvs.aetna.search.data.model.response.CharacterResponse
+import com.cvs.aetna.search.data.model.response.toDomain
 import com.cvs.aetna.search.domain.model.CharacterList
 import javax.inject.Inject
 
@@ -14,9 +14,8 @@ class DefaultCharacterListToDomainTransform @Inject constructor() : CharacterRes
         characters = characterResponse?.results?.map {
             it.toDomain()
         } ?: emptyList(),
+        totalCount = characterResponse?.info?.count ?: 0,
         hasMorePage = characterResponse?.info?.next != null,
         nextPageUrl = characterResponse?.info?.next,
-        errorMsg = characterResponse?.error,
-        hasError = characterResponse?.error != null,
     )
 }

@@ -1,6 +1,6 @@
 package com.cvs.aetna.search.repository
 
-import com.cvs.aetna.search.data.model.Character
+import com.cvs.aetna.search.data.model.response.Character
 import com.cvs.aetna.search.data.remote.CharacterNameAPI
 import com.cvs.aetna.search.data.transformer.CharacterDetailsResponseToDomainTransform
 import com.cvs.aetna.search.domain.model.CharacterDetails
