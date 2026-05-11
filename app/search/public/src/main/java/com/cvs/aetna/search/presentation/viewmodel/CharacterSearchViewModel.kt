@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cvs.aetna.search.analytics.CharacterListAdobeTagUseCase
+import com.cvs.aetna.search.di.IoDispatcher
 import com.cvs.aetna.search.domain.model.CharacterError
 import com.cvs.aetna.search.domain.model.CharacterList
 import com.cvs.aetna.search.domain.usecase.CharacterListUseCase
@@ -21,13 +22,15 @@ import com.cvs.aetna.search.pub.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -65,11 +68,12 @@ sealed class CharacterSearchEvent {
 private const val HANDLED_EXCEPTION = "Handled Exception"
 private const val USE_CASE_EXCEPTION = "UseCase Exception"
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class CharacterSearchViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val characterListUseCase: CharacterListUseCase,
-    private val dispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val telemetryService: TelemetryService,
     private val adobeTagUseCase: CharacterListAdobeTagUseCase,
 ) : ViewModel() {
@@ -93,6 +97,7 @@ class CharacterSearchViewModel @Inject constructor(
     private val genericErrorHandling = CoroutineExceptionHandler { _, throwable ->
         onError(type = HANDLED_EXCEPTION, error = CharacterError.Unknown(throwable.message))
     }
+    private val searchQuery = MutableStateFlow<String?>(null)
 
     private fun onError(
         type: String,
@@ -119,25 +124,38 @@ class CharacterSearchViewModel @Inject constructor(
     }
 
     init {
-        _actions.consumeAsFlow().onEach { actions ->
+        _actions.receiveAsFlow().onEach { actions ->
             handleAction(actions)
         }.launchIn(viewModelScope)
+        doSearchDebounce()
+    }
+
+    private fun doSearchDebounce() {
+        searchQuery.debounce { 500 }.distinctUntilChanged().onEach { name ->
+            name?.let {
+                onCharacterNameUpdate(name)
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun onCharacterNameUpdate(name: String) {
+        adobeTagUseCase.tagOnSearchAction(characterName = name)
+        _filterState.value = _filterState.value.copy(name = name)
+        fetchCharacterList()
     }
 
     fun sendAction(action: CharacterSearchAction) {
         _actions.trySend(action)
     }
 
-    fun sendEvent(event: CharacterSearchEvent) {
+    private fun sendEvent(event: CharacterSearchEvent) {
         eventChannel.trySend(event)
     }
 
     private fun handleAction(action: CharacterSearchAction) {
         when (action) {
             is CharacterSearchAction.Search -> {
-                adobeTagUseCase.tagOnSearchAction(characterName = action.name)
-                _filterState.value = _filterState.value.copy(name = action.name)
-                fetchCharacterList()
+                searchQuery.value = action.name
             }
 
             is CharacterSearchAction.OnCharacterClick -> {

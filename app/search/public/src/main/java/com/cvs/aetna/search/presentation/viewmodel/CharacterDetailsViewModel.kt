@@ -3,6 +3,7 @@ package com.cvs.aetna.search.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cvs.aetna.search.analytics.CharacterDetailsAdobeTagUseCase
+import com.cvs.aetna.search.di.IoDispatcher
 import com.cvs.aetna.search.domain.model.CharacterDetails
 import com.cvs.aetna.search.domain.model.ShareData
 import com.cvs.aetna.search.domain.usecase.CharacterDetailsUseCase
@@ -52,7 +53,7 @@ const val NO_SHARE_DATA_FOUND = "1001"
 
 @HiltViewModel
 class CharacterDetailsViewModel @Inject constructor(
-    private val dispatcher: CoroutineDispatcher,
+    @param:IoDispatcher private val dispatcher: CoroutineDispatcher,
     private val characterDetailsUseCase: CharacterDetailsUseCase,
     private val telemetryService: TelemetryService,
     private val shareCharacterUseCase: ShareCharacterUseCase,

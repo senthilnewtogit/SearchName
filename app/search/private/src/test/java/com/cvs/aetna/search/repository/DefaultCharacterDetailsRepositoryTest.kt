@@ -283,8 +283,7 @@ class DefaultCharacterDetailsRepositoryTest {
             FakeTelemetryService.Function.LogEvent(
                 "GetCharacterDetailsError",
                 mapOf(
-                    "error" to "java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path \$\n" +
-                        "See https://github.com/google/gson/blob/main/Troubleshooting.md#unexpected-json-structure",
+                    "error" to "Not Found",
                 ),
             ),
         )

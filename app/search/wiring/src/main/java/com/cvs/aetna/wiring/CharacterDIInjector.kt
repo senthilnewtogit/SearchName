@@ -6,6 +6,7 @@ import coil3.request.CachePolicy
 import coil3.request.crossfade
 import com.cvs.aetna.search.analytics.CharacterDetailsAdobeTagUseCase
 import com.cvs.aetna.search.analytics.CharacterListAdobeTagUseCase
+import com.cvs.aetna.search.di.IoDispatcher
 import com.cvs.aetna.search.domain.usecase.CharacterDetailsUseCase
 import com.cvs.aetna.search.domain.usecase.CharacterListUseCase
 import com.cvs.aetna.search.domain.usecase.FileProviderWrapper
@@ -40,7 +41,8 @@ object CharacterDIInjector {
 
     @Provides
     @Singleton
-    fun provideCoroutineDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    @IoDispatcher
+    fun provideIo(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     @Singleton

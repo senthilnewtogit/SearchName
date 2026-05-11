@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -73,8 +74,12 @@ fun FilterScreenUiContent(
     }
 }
 
+private const val SPECIES_TEST_TAG = "species_chip_"
+
+private const val STATUS_TEST_TAG = "status_chip_"
+
 @Composable
-private fun UiBody(
+fun UiBody(
     characterFilterUiState: CharacterFilterUiState,
     onApply: (CharacterFilterUiState) -> Unit,
     onReset: () -> Unit,
@@ -132,7 +137,7 @@ private fun UiBody(
                             Modifier.semantics {
                                 stateDescription =
                                     "$allyStatusLabel $item ${if (status == item) selectedLabel else notSelectedLabel}"
-                            },
+                            }.testTag("$STATUS_TEST_TAG$item"),
 
                         )
                     }
@@ -159,7 +164,7 @@ private fun UiBody(
                             Modifier.semantics {
                                 stateDescription =
                                     "$allySpeciesLabel $item ${if (species == item) selectedLabel else notSelectedLabel}"
-                            },
+                            }.testTag("$SPECIES_TEST_TAG$item"),
                         )
                     }
                 }

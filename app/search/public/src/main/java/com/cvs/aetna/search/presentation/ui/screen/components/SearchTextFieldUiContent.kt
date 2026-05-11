@@ -22,7 +22,7 @@ import com.cvs.aetna.search.pub.R
 
 private const val FILTER_TEST_TAG = "filter_button"
 
-private const val TEST_TAG_SEARCH_INPUT = "search_input"
+private const val TEST_TAG_SEARCH_INPUT = "character_search_input"
 
 @Composable
 fun SearchTextField(

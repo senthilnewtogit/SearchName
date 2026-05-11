@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.hideFromAccessibility
@@ -24,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.cvs.aetna.search.domain.model.CharacterDetails
 import com.cvs.aetna.search.pub.R
+
+private const val CHARACTER_ITEM_ = "character_item_"
 
 @Composable
 fun CharacterListItem(
@@ -39,6 +42,7 @@ fun CharacterListItem(
     Column(
         modifier = modifier
             .padding(8.dp)
+            .testTag("$CHARACTER_ITEM_$id")
             .semantics(mergeDescendants = true) {
                 contentDescription = characterName + name.orEmpty()
             }

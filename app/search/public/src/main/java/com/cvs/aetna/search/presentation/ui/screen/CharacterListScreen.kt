@@ -14,6 +14,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import com.cvs.aetna.search.presentation.ui.model.CharacterFilterUiState
 import com.cvs.aetna.search.presentation.ui.model.CharacterListUiModel
@@ -52,6 +53,8 @@ fun CharacterListScreen(
     )
 }
 
+private const val CHARACTER_SEARCH_SCREEN = "character_search_screen"
+
 @Composable
 private fun ShowListScreen(
     onSearchQueryChanged: (String) -> Unit,
@@ -72,7 +75,7 @@ private fun ShowListScreen(
     }
     OnPageLoad(onPageLoad = onPageLoad)
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().testTag(CHARACTER_SEARCH_SCREEN),
         horizontalAlignment = Alignment.Start,
     ) {
         SearchTextField(

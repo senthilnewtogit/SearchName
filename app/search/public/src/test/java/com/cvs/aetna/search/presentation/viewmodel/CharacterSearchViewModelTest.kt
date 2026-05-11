@@ -618,17 +618,15 @@ class CharacterSearchViewModelTest {
             assertEquals(CharacterSearchUiState.Loading, awaitItem())
             val success = awaitItem() as CharacterSearchUiState.Success
             assertEquals(1, success.charactersList.size)
-            fakeCharacterListAdobeTagUseCase.verifyFunctionCalled(FakeCharacterListAdobeTagUseCase.Function.OnSearchAction(characterName = "rick"), 1)
-            fakeCharacterListAdobeTagUseCase.verifyFunctionCalled(FakeCharacterListAdobeTagUseCase.Function.OnSearchAction(characterName = "morty"), 1)
+            fakeCharacterListAdobeTagUseCase.verifyFunctionCalled(FakeCharacterListAdobeTagUseCase.Function.OnSearchAction(characterName = "summer"), 1)
             fakeCharacterListUseCase.verifyFunctionCalled(
                 FakeCharacterListUseCase.Function.GetCharacterList(
                     characterSearch = CharacterSearch(
                         name = "summer",
                     ),
                 ),
-                3,
+                1,
             )
-            fakeCharacterListAdobeTagUseCase.verifyFunctionCalled(FakeCharacterListAdobeTagUseCase.Function.OnSearchAction(characterName = "summer"), 1)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -926,11 +924,11 @@ class CharacterSearchViewModelTest {
             subject.sendAction(CharacterSearchAction.OnPageLoad)
             advanceUntilIdle()
             cancelAndConsumeRemainingEvents()
+            fakeCharacterListAdobeTagUseCase.verifyFunctionCalled(
+                FakeCharacterListAdobeTagUseCase.Function.OnSearchScreenLoadEvent,
+                1,
+            )
         }
-        fakeCharacterListAdobeTagUseCase.verifyFunctionCalled(
-            FakeCharacterListAdobeTagUseCase.Function.OnSearchScreenLoadEvent,
-            1,
-        )
     }
 
     @Test

@@ -8,7 +8,7 @@ import java.io.File
 import javax.inject.Inject
 
 class DefaultFileProviderWrapper @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : FileProviderWrapper {
 
     override fun getUriForFile(file: File): String = FileProvider.getUriForFile(
