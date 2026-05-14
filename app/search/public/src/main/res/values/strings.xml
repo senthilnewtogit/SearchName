@@ -1,0 +1,56 @@
+<resources>
+    <string name="no_result_found">No result found</string>
+    <string name="filter">Filter</string>
+    <string name="unknown_error">Unknow error</string>
+    <string name="retry">Retry</string>
+    <string name="search_character">Search characters…</string>
+    <string name="share">Share</string>
+    <string name="no_share_app_found">No share App found</string>
+    <string name="no_share_data_found">No share data found</string>
+
+    <string name="share_character">Share Character</string>
+    <string name="character_details_unknown">Unknown</string>
+    <string name="character_details_species">Species: %1$s</string>
+    <string name="character_details_status">Status: %1$s</string>
+    <string name="character_details_origin">Origin: %1$s</string>
+    <string name="character_details_type">Type: %1$s</string>
+    <string name="character_details_created">Created: %1$s</string>
+    <string name="character_name">Character Name:</string>
+    <string name="ally_character_label">Character Name</string>
+    <string name="character_count_label">Character Count :%1$s</string>
+    <string name="filter_characters">Filter Characters</string>
+    <string name="filter_status">Status</string>
+
+    <string name="enter_type">Enter type </string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
+    <string name="species">Species</string>
+    <string name="type">Type</string>
+    <string name="a11y_status_filter_label">Status filter:</string>
+    <string name="a11y_species_filter_label">Species filter:</string>
+    <string name="a11y_selected_label">selected</string>
+    <string name="a11y_not_selected_label">not selected</string>
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_timeout">Request timed out. Try again</string>
+    <string name="error_network">Network error occurred</string>
+    <string name="error_ssl">Secure connection failed</string>
+
+    <string name="error_rate_limit">Too many requests. Please wait</string>
+    <string name="error_client">Request error occurred</string>
+    <string name="error_server">Server error. Try again later</string>
+
+    <string name="error_parsing">Data error occurred</string>
+    <string name="error_no_result">No results found</string>
+    <string name="error_unknown">Something went wrong</string>
+    <string-array name="species_list">
+        <item>Human</item>
+        <item>Alien</item>
+        <item>Robot</item>
+    </string-array>
+    <string-array name="status_list">
+        <item>Alive</item>
+        <item>Dead</item>
+        <item>Unknown</item>
+    </string-array>
+
+</resources>
