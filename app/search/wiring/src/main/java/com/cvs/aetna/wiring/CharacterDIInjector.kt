@@ -16,6 +16,8 @@ import com.cvs.aetna.search.domain.usecase.ImageShareWrapper
 import com.cvs.aetna.search.domain.usecase.ShareCharacterUseCase
 import com.cvs.aetna.search.logger.DefaultTelemetryService
 import com.cvs.aetna.search.logger.TelemetryService
+import com.cvs.aetna.search.presentation.navigation.CharacterGraphProvider
+import com.cvs.aetna.search.presentation.navigation.DefaultCharacterNavigator
 import com.cvs.aetna.search.usecase.DefaultCharacterDetailsUseCase
 import com.cvs.aetna.search.usecase.DefaultCharacterListUseCase
 import com.cvs.aetna.search.usecase.DefaultShareCharacterUseCase
@@ -42,7 +44,7 @@ object CharacterDIInjector {
     @Provides
     @Singleton
     @IoDispatcher
-    fun provideIo(): CoroutineDispatcher = Dispatchers.IO
+    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     @Provides
     @Singleton
@@ -111,4 +113,15 @@ abstract class ImageShareBindings {
     abstract fun bindFileProvider(
         impl: DefaultFileProviderWrapper,
     ): FileProviderWrapper
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+interface CharacterSearchNavigatorModule {
+
+    @Singleton
+    @Binds
+    fun bindCharacterSearchNavigator(
+        impl: DefaultCharacterNavigator,
+    ): CharacterGraphProvider
 }

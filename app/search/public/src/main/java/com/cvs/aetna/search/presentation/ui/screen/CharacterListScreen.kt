@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -16,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cvs.aetna.search.presentation.ui.model.CharacterFilterUiState
 import com.cvs.aetna.search.presentation.ui.model.CharacterListUiModel
 import com.cvs.aetna.search.presentation.ui.screen.components.CharacterListGridUiContent
@@ -24,7 +27,70 @@ import com.cvs.aetna.search.presentation.ui.screen.components.LoadingIndicator
 import com.cvs.aetna.search.presentation.ui.screen.components.NoResultFound
 import com.cvs.aetna.search.presentation.ui.screen.components.OnPageLoad
 import com.cvs.aetna.search.presentation.ui.screen.components.SearchTextField
+import com.cvs.aetna.search.presentation.viewmodel.CharacterSearchAction
+import com.cvs.aetna.search.presentation.viewmodel.CharacterSearchEvent
 import com.cvs.aetna.search.presentation.viewmodel.CharacterSearchUiState
+import com.cvs.aetna.search.presentation.viewmodel.CharacterSearchViewModel
+
+@Composable
+fun CharacterListScreenRoute(
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope? = null,
+    characterSearchViewModel: CharacterSearchViewModel = hiltViewModel(),
+    onNavigateToDetails: (characterId: String) -> Unit,
+) {
+    val uiState = characterSearchViewModel.state.collectAsStateWithLifecycle()
+    val searchFilterState = characterSearchViewModel.filterState.collectAsStateWithLifecycle()
+    LaunchedEffect(characterSearchViewModel) {
+        characterSearchViewModel.events.collect { event ->
+            when (event) {
+                is CharacterSearchEvent.NavigateToDetails -> {
+                    onNavigateToDetails(
+                        event.characterId,
+                    )
+                }
+            }
+        }
+    }
+    CharacterListScreen(
+        characterSearchUiState = uiState.value,
+        onCharacterClick = { characterId ->
+            characterSearchViewModel.sendAction(
+                CharacterSearchAction.OnCharacterClick(
+                    characterId,
+                ),
+            )
+        },
+        onCharacterType = { characterTyped ->
+            characterSearchViewModel.sendAction(
+                CharacterSearchAction.Search(characterTyped),
+            )
+        },
+        sharedTransitionScope = sharedTransitionScope,
+        animatedVisibilityScope = animatedVisibilityScope,
+        searchFilterState = searchFilterState.value,
+        onResetFilter = {
+            characterSearchViewModel.sendAction(
+                CharacterSearchAction.OnResetFilter,
+            )
+        },
+        onFilterUpdate = { searchFilterState: CharacterFilterUiState ->
+            characterSearchViewModel.sendAction(
+                CharacterSearchAction.OnFilterUpdate(filterUiState = searchFilterState),
+            )
+        },
+        onEndOfList = {
+            characterSearchViewModel.sendAction(
+                CharacterSearchAction.ReachedEndOfList,
+            )
+        },
+        onPageLoad = {
+            characterSearchViewModel.sendAction(
+                CharacterSearchAction.OnPageLoad,
+            )
+        },
+    )
+}
 
 @Composable
 fun CharacterListScreen(
@@ -75,7 +141,9 @@ private fun ShowListScreen(
     }
     OnPageLoad(onPageLoad = onPageLoad)
     Column(
-        modifier = Modifier.fillMaxSize().testTag(CHARACTER_SEARCH_SCREEN),
+        modifier = Modifier
+            .fillMaxSize()
+            .testTag(CHARACTER_SEARCH_SCREEN),
         horizontalAlignment = Alignment.Start,
     ) {
         SearchTextField(
